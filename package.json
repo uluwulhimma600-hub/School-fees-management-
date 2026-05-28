@@ -1,5 +1,1 @@
-{
-  "name": "School Fees Management System",
-  "version": "1.0.0",
-  "description": "A web-based school fees payment management system"
-}
+{"name": "School Fees Management System", "version": "1.0.0", "description": "A web-based school fees payment management system", "scripts": {"build": "echo 'No build needed'", "start": "echo 'Static site ready'"}, "keywords": ["school", "fees", "payment"], "author": "", "license": "MIT"}
