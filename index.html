@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Fees Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .success-message {
+            display: none;
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .student-list {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #eee;
+        }
+        .student-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+        .student-item p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .student-item strong {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 School Fees Payment System</h1>
+        
+        <div class="success-message" id="successMessage">
+            ✓ Student registered successfully!
+        </div>
+
+        <form id="feesForm">
+            <div class="form-group">
+                <label for="studentName">Student Name *</label>
+                <input type="text" id="studentName" required placeholder="Enter student name">
+            </div>
+
+            <div class="form-group">
+                <label for="studentID">Student ID *</label>
+                <input type="text" id="studentID" required placeholder="Enter student ID">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" required placeholder="Enter email address">
+            </div>
+
+            <div class="form-group">
+                <label for="class">Class/Grade *</label>
+                <select id="class" required>
+                    <option value="">Select Class</option>
+                    <option value="Form 1">Form 1</option>
+                    <option value="Form 2">Form 2</option>
+                    <option value="Form 3">Form 3</option>
+                    <option value="Form 4">Form 4</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="amount">Fees Amount (KES) *</label>
+                <input type="number" id="amount" required placeholder="Enter amount" min="0">
+            </div>
+
+            <div class="form-group">
+                <label for="paymentMethod">Payment Method *</label>
+                <select id="paymentMethod" required>
+                    <option value="">Select Payment Method</option>
+                    <option value="M-Pesa">M-Pesa</option>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                    <option value="Card">Debit/Credit Card</option>
+                    <option value="Cash">Cash</option>
+                </select>
+            </div>
+
+            <button type="submit">Register Payment</button>
+        </form>
+
+        <div class="student-list" id="studentList"></div>
+    </div>
+
+    <script>
+        // Load data from localStorage
+        function loadStudents() {
+            const students = JSON.parse(localStorage.getItem('students')) || [];
+            const listDiv = document.getElementById('studentList');
+            
+            if (students.length === 0) {
+                listDiv.innerHTML = '';
+                return;
+            }
+
+            listDiv.innerHTML = '<h3 style="color: #333; margin-bottom: 15px;">Registered Students</h3>';
+            students.forEach((student, index) => {
+                const studentDiv = document.createElement('div');
+                studentDiv.className = 'student-item';
+                studentDiv.innerHTML = `
+                    <p><strong>Name:</strong> ${student.name}</p>
+                    <p><strong>ID:</strong> ${student.id}</p>
+                    <p><strong>Class:</strong> ${student.class}</p>
+                    <p><strong>Amount:</strong> KES ${parseFloat(student.amount).toLocaleString()}</p>
+                    <p><strong>Method:</strong> ${student.method}</p>
+                    <p><strong>Date:</strong> ${new Date(student.date).toLocaleDateString()}</p>
+                `;
+                listDiv.appendChild(studentDiv);
+            });
+        }
+
+        // Handle form submission
+        document.getElementById('feesForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const student = {
+                name: document.getElementById('studentName').value,
+                id: document.getElementById('studentID').value,
+                email: document.getElementById('email').value,
+                class: document.getElementById('class').value,
+                amount: document.getElementById('amount').value,
+                method: document.getElementById('paymentMethod').value,
+                date: new Date().toISOString()
+            };
+
+            // Save to localStorage
+            const students = JSON.parse(localStorage.getItem('students')) || [];
+            students.push(student);
+            localStorage.setItem('students', JSON.stringify(students));
+
+            // Show success message
+            const successMsg = document.getElementById('successMessage');
+            successMsg.style.display = 'block';
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 3000);
+
+            // Reset form
+            this.reset();
+
+            // Reload student list
+            loadStudents();
+        });
+
+        // Load students on page load
+        loadStudents();
+    </script>
+</body>
+</html>
